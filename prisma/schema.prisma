@@ -1,0 +1,50 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  name      String
+  email     String
+  googleId  String   @unique
+  imageUrl  String?
+  Trip      Trip[]
+}
+
+model Trip {
+  id              String   @id @default(uuid())
+  distance        Float
+  startTime       DateTime
+  endTime         DateTime
+  endLocation     String
+  startLocation   String
+  user            String
+  month           Int
+  year            Int
+  endLocationId   Location @relation("endLocation", fields: [endLocation], references: [placeId])
+  startLocationId Location @relation("startLocation", fields: [startLocation], references: [placeId])
+  userId          User     @relation(fields: [user], references: [id])
+
+  @@unique([user, startTime], name: "Trip_user_startTime_unique_constraint")
+  @@index([endLocation], map: "Trip_endLocationId_fkey")
+  @@index([startLocation], map: "Trip_startLocationId_fkey")
+  @@index([user], map: "Trip_userId_fkey")
+}
+
+model Location {
+  name      String
+  address   String
+  latitude  Int
+  longitude Int
+  placeId   String @id @unique
+  endTrip   Trip[] @relation("endLocation")
+  startTrip Trip[] @relation("startLocation")
+}

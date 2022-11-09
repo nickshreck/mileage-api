@@ -1,0 +1,108 @@
+import express from "express";
+import * as trpc from "@trpc/server";
+import * as trpcExpress from "@trpc/server/adapters/express";
+import cors from "cors";
+import { z } from "zod";
+import { convertAllGoogleData }  from "./getGoogleData";
+import { addUser, getUsers, getUser, addLocations, deleteAll, getTrips } from "./useDB";
+
+const appRouter = trpc
+  .router()
+  .query("getTrips", {
+    input: z.object({
+      userId: z.string(),
+      year: z.number(),
+      month: z.number()
+    }),
+    async resolve({ input }) {
+
+      let data = await getTrips(input);
+
+      return (data);
+
+    },
+  })
+  .query("getUser", {
+    input: z.object({
+      name: z.string(),
+      email: z.string(),
+      imageUrl: z.string(),
+      googleId: z.string(),
+    }),
+    async resolve({ input }) {
+
+      let data = await getUser(input);
+
+      console.log("getUser", input, data)
+
+      return ( data );
+
+    },
+  })
+  .mutation("addUser", {
+    input: z.object({
+      userId: z.string(),
+      name: z.string(),
+    }),
+    async resolve({ input }) {
+
+      const data = await addUser(input);
+
+      console.log('data', data);
+
+      return true;
+    }
+  })
+    .mutation("createDatabaseData", {
+    input: z.object({
+      userId: z.string()
+    }),
+    async resolve({ input }) {
+
+      console.log('using userId', input.userId);
+
+      const data = await convertAllGoogleData(input.userId);
+
+      console.log('data', data);
+
+      return true;
+    }
+  })
+    .mutation("deleteAll", {
+      input: z.object({
+        userId: z.string()
+      }),
+      async resolve({ input }) {
+  
+        const data = await deleteAll(input.userId);
+  
+        console.log('data', data);
+  
+        return {
+
+        };
+      },
+  })
+
+export type AppRouter = typeof appRouter;
+
+const app = express();
+app.use(cors());
+const port = 2000;
+
+app.use(
+  "/trpc",
+  trpcExpress.createExpressMiddleware({
+    router: appRouter,
+    createContext: () => null,
+  })
+);
+
+app.get("/", async (req, res) => {
+  res.send('Mileage API');
+});
+
+
+app.listen(port, () => {
+  console.log(`api-server listening at http://localhost:${port}`);
+});
