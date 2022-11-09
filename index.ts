@@ -6,6 +6,12 @@ import { z } from "zod";
 import { convertAllGoogleData }  from "./getGoogleData";
 import { addUser, getUsers, getUser, addLocations, deleteAll, getTrips } from "./useDB";
 
+import dotenv from 'dotenv'
+dotenv.config()
+import multer from "multer";
+import { s3Uploadv3 } from "./s3Service";
+// import uuid from "uuidv4";
+
 const appRouter = trpc
   .router()
   .query("getTrips", {
@@ -98,11 +104,56 @@ app.use(
   })
 );
 
-app.get("/", async (req, res) => {
-  res.send('Mileage API');
-});
-
+// app.get("/", async (req, res) => {
+//   res.send('Mileage API');
+// });
 
 app.listen(port, () => {
   console.log(`api-server listening at http://localhost:${port}`);
 });
+
+const storage = multer.memoryStorage();
+
+const fileFilter = (req, file, cb) => {
+  cb(null, true);
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 1000000000, files: 2 },
+});
+
+app.post("/upload", upload.array("file"), async (req, res) => {
+  try {
+    const results = await s3Uploadv3(req.files);
+    console.log(results);
+    return res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        message: "file is too large",
+      });
+    }
+
+    if (error.code === "LIMIT_FILE_COUNT") {
+      return res.status(400).json({
+        message: "File limit reached",
+      });
+    }
+
+    if (error.code === "LIMIT_UNEXPECTED_FILE") {
+      return res.status(400).json({
+        message: "File must be an image",
+      });
+    }
+  }
+});
+
+// app.listen(4000, () => console.log("listening on port 4000"));
