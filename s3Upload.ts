@@ -1,13 +1,13 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-// import uuid from "uuidv4";
 
-export const s3Uploadv3 = async (files) => {
+export const uploadFile = async (files, googleId) => {
   const s3client = new S3Client();
 
-  const params = files.map((file) => {
+  const params = files.map((file:{originalname:string, buffer:any}) => {
+    console.log('file', file);
     return {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `uploads/${file.originalname}`,
+      Key: `${googleId}.zip`,
       Body: file.buffer,
     };
   });

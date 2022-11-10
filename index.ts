@@ -9,8 +9,7 @@ import { addUser, getUsers, getUser, addLocations, deleteAll, getTrips } from ".
 import dotenv from 'dotenv'
 dotenv.config()
 import multer from "multer";
-import { s3Uploadv3 } from "./s3Service";
-// import uuid from "uuidv4";
+import { uploadFile } from "./s3Upload";
 
 const appRouter = trpc
   .router()
@@ -104,10 +103,6 @@ app.use(
   })
 );
 
-// app.get("/", async (req, res) => {
-//   res.send('Mileage API');
-// });
-
 app.listen(port, () => {
   console.log(`api-server listening at http://localhost:${port}`);
 });
@@ -121,13 +116,25 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 1000000000, files: 2 },
+  limits: { fileSize: 1000000000, files: 3 },
 });
 
 app.post("/upload", upload.array("file"), async (req, res) => {
+  const files = req.files;
+  req.props = Object.assign(req.query, req.params, req.body);
   try {
-    const results = await s3Uploadv3(req.files);
+    const results = await uploadFile(files, req.props.googleId);
     console.log(results);
+    return res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.post("/googleDataTransfer", async (req, res) => {
+  req.props = Object.assign(req.query, req.params, req.body);
+  try {
+    console.log(req.props);
     return res.json({ status: "success" });
   } catch (err) {
     console.log(err);
@@ -155,5 +162,3 @@ app.use((error, req, res, next) => {
     }
   }
 });
-
-// app.listen(4000, () => console.log("listening on port 4000"));
