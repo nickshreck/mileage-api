@@ -5,6 +5,7 @@ import cors from "cors";
 import { z } from "zod";
 import { convertAllGoogleData }  from "./getGoogleData";
 import { addUser, getUsers, getUser, addLocations, deleteAll, getTrips } from "./useDB";
+import bodyParser from 'body-parser';
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -119,28 +120,6 @@ const upload = multer({
   limits: { fileSize: 1000000000, files: 3 },
 });
 
-app.post("/upload", upload.array("file"), async (req, res) => {
-  const files = req.files;
-  req.props = Object.assign(req.query, req.params, req.body);
-  try {
-    const results = await uploadFile(files, req.props.googleId);
-    console.log(results);
-    return res.json({ status: "success" });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-app.post("/googleDataTransfer", async (req, res) => {
-  // req.props = Object.assign(req.query, req.params, req.body);
-  try {
-    console.log("hello you have been contacted from Lambda to tell you to run the googleTransfer", req.body);
-    return res.json({ status: "success" });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === "LIMIT_FILE_SIZE") {
@@ -162,3 +141,28 @@ app.use((error, req, res, next) => {
     }
   }
 });
+
+app.post("/upload", upload.array("file"), async (req, res) => {
+  const files = req.files;
+  req.props = Object.assign(req.query, req.params, req.body);
+  try {
+    const results = await uploadFile(files, req.props.googleId);
+    console.log(results);
+    return res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.use(express.json());
+
+app.post("/googleDataTransfer", async (req, res) => {
+
+  try {
+    console.log("hello you have been contacted from Lambda to tell you to run the googleTransfer", req.body);
+    return res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
