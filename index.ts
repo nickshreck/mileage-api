@@ -132,9 +132,9 @@ app.post("/upload", upload.array("file"), async (req, res) => {
 });
 
 app.post("/googleDataTransfer", async (req, res) => {
-  req.props = Object.assign(req.query, req.params, req.body);
+  // req.props = Object.assign(req.query, req.params, req.body);
   try {
-    console.log("hello you have been contacted from Lambda to tell you to run the googleTransfer", req.props, req.body);
+    console.log("hello you have been contacted from Lambda to tell you to run the googleTransfer", req.body);
     return res.json({ status: "success" });
   } catch (err) {
     console.log(err);
