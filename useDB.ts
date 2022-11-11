@@ -185,15 +185,15 @@ export async function deleteAll(userId: string){
     })
 
 
-    const users = await prisma.user.deleteMany()
-    .catch(e => {
-        console.error(e.message)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+    // const users = await prisma.user.deleteMany()
+    // .catch(e => {
+    //     console.error(e.message)
+    // })
+    // .finally(async () => {
+    //     await prisma.$disconnect()
+    // })
 
-    console.log('deleted all', trips, locations, users)
+    console.log('deleted all', trips, locations)
 
     return trips
 

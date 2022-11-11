@@ -24,6 +24,8 @@ const appRouter = trpc
     }),
     async resolve({ input }) {
 
+      console.log('getTrips', input)
+
       let data = await getTrips(input);
 
       return (data);
@@ -41,7 +43,7 @@ const appRouter = trpc
 
       let data = await getUser(input);
 
-      // console.log("getUser", input, data)
+      console.log("getUser", input, data)
 
       return ( data );
 

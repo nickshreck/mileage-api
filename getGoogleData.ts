@@ -101,7 +101,7 @@ export async function convertGoogleData(data: any){
     const trips = data?.timelineObjects;
 
     if(trips === undefined){
-        console.log('no trips', data, trips)
+        // console.log('no trips', data, trips)
         return;
     }
 
