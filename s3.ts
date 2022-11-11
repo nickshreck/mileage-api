@@ -4,15 +4,15 @@ const Stream = require('stream')
 
 const client = new S3Client({ region: process.env.AWS_REGION, });
 
-export const listFiles = async (input) => {
+export const listFiles = async (googleId) => {
 
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     // Delimiter: '/',
-    Prefix: input.googleId
+    Prefix: googleId
   };
 
-  const command = new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: input.googleId + ".zip" });
+  const command = new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: googleId + ".zip" });
   const response = await client.send(command);
 
   const data = await client.send(new ListObjectsCommand(params));

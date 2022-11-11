@@ -97,7 +97,7 @@ const appRouter = trpc
       }),
     async resolve({input}) {
 
-      const files = await listFiles(input);
+      const files = await listFiles(input.googleId);
 
       const data = await convertAllGoogleData(files, input.googleId);
 
@@ -109,6 +109,16 @@ const appRouter = trpc
       };
     },
 })
+
+const triggerGoogleDataTransfer = async (googleId) => {
+
+  const files = await listFiles(googleId);
+
+  const data = await convertAllGoogleData(files, googleId);
+
+  return;
+
+}
 
 export type AppRouter = typeof appRouter;
 
@@ -180,6 +190,7 @@ app.post("/googleDataTransfer", async (req, res) => {
 
   try {
     console.log("hello you have been contacted from Lambda to tell you to run the googleTransfer", req.body);
+    await triggerGoogleDataTransfer(req.body.googleId);
     return res.json({ status: "success" });
   } catch (err) {
     console.log(err);
