@@ -56,6 +56,8 @@ export async function convertAllGoogleData(files:string[], googleId: string){
 
                 console.log("processing file", file, "userId", profile.id);
 
+                try{
+
                 let trips = await convertGoogleData(data);
 
                 const dbData = await createDatabaseData(profile.id, trips);
@@ -63,6 +65,10 @@ export async function convertAllGoogleData(files:string[], googleId: string){
                 const dbLocations = await addLocations(dbData.locations);
 
                 const dbTrips = await addTrips(dbData.trips);
+
+                }catch(e){
+                    console.log('weird that it breaks here', e)
+                }
 
             }
 
@@ -126,12 +132,14 @@ try{
 
                 }
 
+                // console.log('pushing a trip', thisTrip)
+
                 allTrips.push(thisTrip);
 
             }
 
         }catch(e){
-            console.log('trip error', e)
+            // console.log('trip error', e)
         }
 
     })
@@ -207,12 +215,12 @@ export async function createDatabaseData(userId:string, data:any){
         
     for(var a in data){
 
-        console.log(data[a].start.location.placeId)
+        // console.log(data[a].start.location.placeId)
 
         try{
             locations.set(data[a].start.location.placeId, getLocation(data[a].start.location))
         }catch(e){
-            console.log('createLocations error', e)
+            // console.log('createLocations error', e)
         }
 
         try{
