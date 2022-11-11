@@ -65,6 +65,24 @@ export async function getUser(profile:{ name: string, email: string, imageUrl: s
 
 }
 
+export async function getUserFromGoogleId(googleId:string){
+
+    const user = await prisma.user.findUnique({
+        where: {
+          googleId: googleId,
+        },
+      })
+    .catch(e => {
+        console.error(e.message)
+    })
+    .finally(async () => {
+        await prisma.$disconnect()
+    })
+
+    return user
+
+}
+
 export async function getTrips(input: {userId: string, month: number, year: number}){
 
     const trips = await prisma.trip.findMany({
@@ -107,6 +125,8 @@ export async function addLocations(data:Map<string, Location>){
     .finally(async () => {
         await prisma.$disconnect()
     })
+
+    console.log('locations', locations)
 
     return locations
 
@@ -172,6 +192,8 @@ export async function deleteAll(userId: string){
     .finally(async () => {
         await prisma.$disconnect()
     })
+
+    console.log('deleted all', trips, locations, users)
 
     return trips
 

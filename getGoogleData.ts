@@ -1,13 +1,15 @@
 import { promises as fs } from 'fs';
 import moment from 'moment';
 var glob = require("glob")
+import { getFile } from './s3';
+import * as fs from 'fs';
 
 type DateNick = {
     month: string;
     year: string;
 }
 
-import { addUser, getUsers, addLocations, addTrips } from "./useDB";
+import { addUser, getUser, getUserFromGoogleId, getUsers, addLocations, addTrips } from "./useDB";
 
 export async function getGoogleData(date: DateNick){
 
@@ -29,20 +31,34 @@ export async function getGoogleDataFromFile(filePath: string){
 
 }
 
+export async function getGoogleDataFromBucket(filePath: string){
 
-export async function convertAllGoogleData(userId:string){
+    const json = await getFile(filePath)
+
+    // const json = (file) => file.Body.json();
+
+    // console.log("returned file", json);
+
+    return json
+
+}
+
+
+export async function convertAllGoogleData(files:string[], googleId: string){
+
+    const profile = await getUserFromGoogleId(googleId);
 
        const installLocations = async(files:string[]) => {
 
             for (let file of files) {
 
-                console.log('file', file);
+                const data = await getGoogleDataFromBucket(file);
 
-                const data = await getGoogleDataFromFile(file);
+                console.log("processing file", file, "userId", profile.id);
 
                 let trips = await convertGoogleData(data);
 
-                const dbData = await createDatabaseData(userId, trips);
+                const dbData = await createDatabaseData(profile.id, trips);
 
                 const dbLocations = await addLocations(dbData.locations);
 
@@ -54,12 +70,12 @@ export async function convertAllGoogleData(userId:string){
 
           }
 
-    glob( '../../data/Location History/Semantic Location History/**/*.json', async ( err:any, files:string[] ) => {
+    // glob( '../../data/Location History/Semantic Location History/**/*.json', async ( err:any, files:string[] ) => {
 
-        installLocations(files);
+        await installLocations(files);
     
 
-    });
+    // });
     
     return true;
 
@@ -115,7 +131,7 @@ try{
             }
 
         }catch(e){
-            // console.log('trip error', e)
+            console.log('trip error', e)
         }
 
     })
@@ -191,10 +207,12 @@ export async function createDatabaseData(userId:string, data:any){
         
     for(var a in data){
 
+        console.log(data[a].start.location.placeId)
+
         try{
             locations.set(data[a].start.location.placeId, getLocation(data[a].start.location))
         }catch(e){
-            // console.log('createLocations error', e)
+            console.log('createLocations error', e)
         }
 
         try{

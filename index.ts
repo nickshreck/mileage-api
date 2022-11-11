@@ -12,6 +12,8 @@ dotenv.config()
 import multer from "multer";
 import { uploadFile } from "./s3Upload";
 
+import { listFiles } from "./s3";
+
 const appRouter = trpc
   .router()
   .query("getTrips", {
@@ -39,7 +41,7 @@ const appRouter = trpc
 
       let data = await getUser(input);
 
-      console.log("getUser", input, data)
+      // console.log("getUser", input, data)
 
       return ( data );
 
@@ -89,6 +91,24 @@ const appRouter = trpc
         };
       },
   })
+  .mutation("dataTransfer", {
+      input:z.object({
+        googleId: z.string()
+      }),
+    async resolve({input}) {
+
+      const files = await listFiles(input);
+
+      const data = await convertAllGoogleData(files, input.googleId);
+
+      return {
+
+        result: data,
+        status: 'success'
+
+      };
+    },
+})
 
 export type AppRouter = typeof appRouter;
 
