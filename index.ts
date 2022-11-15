@@ -18,9 +18,6 @@ const port = 3000;
 // Express:
 
 app.use('/', express.static('../client/dist/'));
-app.use('/upload', express.static('../client/dist/'));
-app.use('/settings', express.static('../client/dist/'));
-app.use('/search', express.static('../client/dist/'));
 
 // tRPC:
 
@@ -98,3 +95,4 @@ app.post("/googleDataTransfer", async (req, res) => {
   }
 });
 
+app.use('*', express.static('../client/dist/'));
