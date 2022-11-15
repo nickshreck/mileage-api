@@ -11,11 +11,15 @@ import multer from "multer";
 import { uploadFile } from "./functions/s3";
 import { triggerGoogleDataTransfer } from "./functions/getGoogleData";
 
-// tRPC:
-
 const app = express();
 app.use(cors());
-const port = 2000;
+const port = 3000;
+
+// Express:
+
+app.use('/', express.static('../client/dist/'));
+
+// tRPC:
 
 app.use(
   "/trpc",

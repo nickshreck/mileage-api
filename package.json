@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "license": "MIT",
   "scripts": {
-    "startx": "ts-node-dev index.ts",
+    "run": "ts-node-dev index.ts",
     "start": "ts-node-dev --files --transpile-only --respawn --inspect=4321 --project tsconfig.json index.ts"
   },
   "main": "index.ts",
