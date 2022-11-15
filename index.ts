@@ -13,7 +13,7 @@ import { triggerGoogleDataTransfer } from "./functions/getGoogleData";
 
 const app = express();
 app.use(cors());
-const port = 3000;
+const port = 80;
 
 // Express:
 
