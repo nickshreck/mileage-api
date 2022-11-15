@@ -1,8 +1,9 @@
-import { promises as fs } from 'fs';
+import { promises as fsx } from 'fs';
 import moment from 'moment';
 var glob = require("glob")
 import { getFile } from './s3';
-import * as fs from 'fs';
+// import * as fs from 'fs';
+import { listFiles } from "./s3";
 
 type DateNick = {
     month: string;
@@ -17,7 +18,7 @@ export async function getGoogleData(date: DateNick){
 
     const filePath = `../../data/Location History/Semantic Location History/${year}/${year}_${month.toUpperCase()}.json`;
 
-    const data = await fs.readFile(filePath, 'utf8')
+    const data = await fsx.readFile(filePath, 'utf8')
 
     return JSON.parse(data)
 
@@ -25,7 +26,7 @@ export async function getGoogleData(date: DateNick){
 
 export async function getGoogleDataFromFile(filePath: string){
 
-    const data = await fs.readFile(filePath, 'utf8')
+    const data = await fsx.readFile(filePath, 'utf8')
 
     return JSON.parse(data)
 
@@ -241,3 +242,14 @@ export async function createDatabaseData(userId:string, data:any){
     return {trips: trips, locations: locations};
 
 }
+
+export const triggerGoogleDataTransfer = async (googleId) => {
+
+    const files = await listFiles(googleId);
+  
+    const data = await convertAllGoogleData(files, googleId);
+  
+    return;
+  
+  }
+  

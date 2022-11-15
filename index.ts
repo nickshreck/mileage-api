@@ -1,128 +1,17 @@
 import express from "express";
-import * as trpc from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import cors from "cors";
-import { z } from "zod";
-import { convertAllGoogleData }  from "./getGoogleData";
-import { addUser, getUsers, getUser, addLocations, deleteAll, getTrips } from "./useDB";
-import bodyParser from 'body-parser';
+
+import { appRouter } from "./functions/api";
 
 import dotenv from 'dotenv'
 dotenv.config()
+
 import multer from "multer";
-import { uploadFile } from "./s3Upload";
+import { uploadFile } from "./functions/s3";
+import { triggerGoogleDataTransfer } from "./functions/getGoogleData";
 
-import { listFiles } from "./s3";
-
-const appRouter = trpc
-  .router()
-  .query("getTrips", {
-    input: z.object({
-      userId: z.string(),
-      year: z.number(),
-      month: z.number()
-    }),
-    async resolve({ input }) {
-
-      console.log('getTrips', input)
-
-      let data = await getTrips(input);
-
-      return (data);
-
-    },
-  })
-  .query("getUser", {
-    input: z.object({
-      name: z.string(),
-      email: z.string(),
-      imageUrl: z.string(),
-      googleId: z.string(),
-    }),
-    async resolve({ input }) {
-
-      let data = await getUser(input);
-
-      console.log("getUser", input, data)
-
-      return ( data );
-
-    },
-  })
-  .mutation("addUser", {
-    input: z.object({
-      userId: z.string(),
-      name: z.string(),
-    }),
-    async resolve({ input }) {
-
-      const data = await addUser(input);
-
-      console.log('data', data);
-
-      return true;
-    }
-  })
-    .mutation("createDatabaseData", {
-    input: z.object({
-      userId: z.string()
-    }),
-    async resolve({ input }) {
-
-      console.log('using userId', input.userId);
-
-      const data = await convertAllGoogleData(input.userId);
-
-      console.log('data', data);
-
-      return true;
-    }
-  })
-    .mutation("deleteAll", {
-      input: z.object({
-        userId: z.string()
-      }),
-      async resolve({ input }) {
-  
-        const data = await deleteAll(input.userId);
-  
-        console.log('data', data);
-  
-        return {
-
-        };
-      },
-  })
-  .mutation("dataTransfer", {
-      input:z.object({
-        googleId: z.string()
-      }),
-    async resolve({input}) {
-
-      const files = await listFiles(input.googleId);
-
-      const data = await convertAllGoogleData(files, input.googleId);
-
-      return {
-
-        result: data,
-        status: 'success'
-
-      };
-    },
-})
-
-const triggerGoogleDataTransfer = async (googleId) => {
-
-  const files = await listFiles(googleId);
-
-  const data = await convertAllGoogleData(files, googleId);
-
-  return;
-
-}
-
-export type AppRouter = typeof appRouter;
+// tRPC:
 
 const app = express();
 app.use(cors());
@@ -139,6 +28,9 @@ app.use(
 app.listen(port, () => {
   console.log(`api-server listening at http://localhost:${port}`);
 });
+
+
+// Upload file to S3 && Lambda function
 
 const storage = multer.memoryStorage();
 
