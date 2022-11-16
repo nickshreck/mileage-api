@@ -12,13 +12,20 @@ export const listFiles = async (googleId) => {
     Prefix: googleId
   };
 
+  try{
   const command = new DeleteObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: googleId + ".zip" });
   const response = await client.send(command);
+  }catch(e){
+    console.log("error deleting zip", e);
+  }
 
   const data = await client.send(new ListObjectsCommand(params));
 
+  try{
   const files = data.Contents.map((file) => { if(file.Key.includes('json')) return (file.Key) });
-
+  }catch(e){
+    console.log("error getting files", e);
+  }
   // console.log('data listFiles', files);
 
   return files;
