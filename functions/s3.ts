@@ -61,7 +61,12 @@ export const getFile = async (fileName) => {
 
   // console.log('data getFile', JSON.parse(json));
 
+  try{
   return JSON.parse(string);
+  }catch(e){
+    console.log("error parsing json", e);
+    return;
+  }
 
 }
 
