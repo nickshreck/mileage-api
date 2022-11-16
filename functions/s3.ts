@@ -21,12 +21,14 @@ export const listFiles = async (googleId) => {
 
   const data = await client.send(new ListObjectsCommand(params));
 
+  let files;
+
   try{
-  const files = data.Contents.map((file) => { if(file.Key.includes('json')) return (file.Key) });
+  files = data.Contents.map((file) => { if(file.Key.includes('json')) return (file.Key) });
   }catch(e){
     console.log("error getting files", e);
   }
-  // console.log('data listFiles', files);
+  console.log('data listFiles', files);
 
   return files;
 
