@@ -24,8 +24,8 @@ export const listFiles = async (googleId) => {
   let files;
 
   try{
-    files = data.Contents.filter((file) => file.Key.includes('json'));
-  // files = data.Contents.map((file) => { if(file.Key.includes('json')) return (file.Key) });
+    const filesFilter = data.Contents.filter((file) => file.Key.includes('json'));
+    files = filesFilter.map((file) => { if(file.Key.includes('json')) return (file.Key) });
   }catch(e){
     console.log("error getting files", e);
   }
