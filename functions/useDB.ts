@@ -135,14 +135,14 @@ export async function addLocations(data:Map<string, Location>){
 
 type Trip = {
 
-    distance:        number;
-    startTime:       Date;
-    endTime:       Date;
+    distance:   number;
+    startTime:  Date;
+    endTime:    Date;
     month: number,
     year: number,
-    endLocation:     string;
-    startLocation:   string;
-    user:         string;
+    endLocation:    string;
+    startLocation:  string;
+    user:   string;
 
 }
 

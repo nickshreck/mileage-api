@@ -4,25 +4,24 @@ var glob = require("glob")
 import { getFile } from './s3';
 // import * as fs from 'fs';
 import { listFiles } from "./s3";
+import { getUserFromGoogleId, addLocations, addTrips } from "./useDB";
 
-type DateNick = {
-    month: string;
-    year: string;
-}
+// type DateNick = {
+//     month: string;
+//     year: string;
+// }
 
-import { addUser, getUser, getUserFromGoogleId, getUsers, addLocations, addTrips } from "./useDB";
+// export async function getGoogleData(date: DateNick){
 
-export async function getGoogleData(date: DateNick){
+//     const { month, year } = date;
 
-    const { month, year } = date;
+//     const filePath = `../../data/Location History/Semantic Location History/${year}/${year}_${month.toUpperCase()}.json`;
 
-    const filePath = `../../data/Location History/Semantic Location History/${year}/${year}_${month.toUpperCase()}.json`;
+//     const data = await fsx.readFile(filePath, 'utf8')
 
-    const data = await fsx.readFile(filePath, 'utf8')
+//     return JSON.parse(data)
 
-    return JSON.parse(data)
-
-}
+// }
 
 export async function getGoogleDataFromFile(filePath: string){
 
@@ -32,19 +31,6 @@ export async function getGoogleDataFromFile(filePath: string){
 
 }
 
-export async function getGoogleDataFromBucket(filePath: string){
-
-    const json = await getFile(filePath)
-
-    // const json = (file) => file.Body.json();
-
-    // console.log("returned file", json);
-
-    return json
-
-}
-
-
 export async function convertAllGoogleData(files:string[], googleId: string){
 
     const profile = await getUserFromGoogleId(googleId);
@@ -53,7 +39,7 @@ export async function convertAllGoogleData(files:string[], googleId: string){
 
             for (let file of files) {
 
-                const data = await getGoogleDataFromBucket(file);
+                const data = await getFile(file);
 
                 console.log("processing file", file, "userId", profile.id);
 
@@ -87,8 +73,6 @@ export async function convertAllGoogleData(files:string[], googleId: string){
     return true;
 
 }
-
-
 
 export async function convertGoogleData(data: any){
 
@@ -251,5 +235,5 @@ export const triggerGoogleDataTransfer = async (googleId) => {
   
     return;
   
-  }
+}
   

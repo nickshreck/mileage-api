@@ -1,6 +1,7 @@
 import * as trpc from "@trpc/server";
 import { addUser, getUser, deleteAll, getTrips } from "./useDB";
 import { z } from "zod";
+import { listFiles } from "./s3";
 
 const appRouter = trpc
   .router()
@@ -86,6 +87,10 @@ const appRouter = trpc
         googleId: z.string()
       }),
     async resolve({input}) {
+
+      // This is the function that will be called when the user clicks the button to transfer their data
+
+      // This will be scanning the existing files, not from the upload
 
       const files = await listFiles(input.googleId);
 

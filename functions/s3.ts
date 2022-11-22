@@ -29,7 +29,8 @@ export const listFiles = async (googleId) => {
   }catch(e){
     console.log("error getting files", e);
   }
-  console.log('data listFiles', files);
+  
+  // console.log('data listFiles', files);
 
   return files;
 

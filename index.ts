@@ -19,6 +19,12 @@ const port = 3000;
 
 app.use('/', express.static('../client/dist/'));
 
+app.use(express.json());
+
+app.listen(port, () => {
+  console.log(`api-server listening at http://localhost:${port}`);
+});
+
 // tRPC:
 
 app.use(
@@ -28,11 +34,6 @@ app.use(
     createContext: () => null,
   })
 );
-
-app.listen(port, () => {
-  console.log(`api-server listening at http://localhost:${port}`);
-});
-
 
 // Upload file to S3 && Lambda function
 
@@ -81,8 +82,6 @@ app.post("/upload", upload.array("file"), async (req, res) => {
     console.log(err);
   }
 });
-
-app.use(express.json());
 
 app.post("/googleDataTransfer", async (req, res) => {
 
