@@ -222,17 +222,17 @@ export async function createDatabaseData(userId: string, data: any) {
 export const triggerGoogleDataTransfer = async (googleId: string) => {
     // console.log("reached triggerGoogleDataTransfer");
     // This fetches a list of the files from the S3 bucket:
-    // const files = await listFiles(googleId);
+    const files = await listFiles(googleId);
     // This converts the data from the files into a format that can be used by the database:
-    // const data = await convertAllGoogleData(files, googleId, "online");
+    const data = await convertAllGoogleData(files, googleId, "online");
 
     // or if loaded from a local file:
-    glob(
-        "../../data/Location History/Semantic Location History/**/*.json",
-        async (err: any, files: string[]) => {
-            await convertAllGoogleData(files, googleId, "local");
-        }
-    );
+    // glob(
+    //     "../../data/Location History/Semantic Location History/**/*.json",
+    //     async (err: any, files: string[]) => {
+    //         await convertAllGoogleData(files, googleId, "local");
+    //     }
+    // );
 
     return;
 };
