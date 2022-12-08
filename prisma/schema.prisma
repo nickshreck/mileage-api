@@ -29,6 +29,7 @@ model Trip {
   user            String
   month           Int
   year            Int
+  classification  String @default("unclassified") // business / personal
   endLocationId   Location @relation("endLocation", fields: [endLocation], references: [placeId])
   startLocationId Location @relation("startLocation", fields: [startLocation], references: [placeId])
   userId          User     @relation(fields: [user], references: [id])
