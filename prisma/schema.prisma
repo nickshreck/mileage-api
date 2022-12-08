@@ -1,12 +1,11 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  relationMode = "prisma"
 }
 
 model User {
@@ -29,7 +28,7 @@ model Trip {
   user            String
   month           Int
   year            Int
-  classification  String @default("unclassified") // business / personal
+  classification  String   @default("unclassified") // business / personal
   endLocationId   Location @relation("endLocation", fields: [endLocation], references: [placeId])
   startLocationId Location @relation("startLocation", fields: [startLocation], references: [placeId])
   userId          User     @relation(fields: [user], references: [id])

@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE `User` ADD COLUMN `email` VARCHAR(191) NULL,
-    ADD COLUMN `googleId` VARCHAR(191) NULL,
-    ADD COLUMN `imageUrl` VARCHAR(191) NULL;
