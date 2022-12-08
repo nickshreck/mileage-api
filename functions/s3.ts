@@ -43,7 +43,7 @@ export const listFiles = async (googleId: any) => {
     }
 
     try {
-        const files = data.Contents.filter(
+        files = data.Contents.filter(
             (file: any) => "Key" in file && file.Key.endsWith(".json")
         ).map((file) => file.Key);
     } catch (e) {
