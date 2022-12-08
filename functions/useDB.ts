@@ -323,7 +323,7 @@ export async function addTrips(data: Map<string, Trip>) {
     return trips;
 }
 
-export async function updateTrip(userId: string, classification: string) {
+export async function updateTrip(userId: string, classification: any) {
     const data = await prisma.trip.update({
         where: {
             id: userId,
