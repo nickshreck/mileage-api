@@ -219,7 +219,7 @@ export async function createDatabaseData(userId: string, data: any) {
 
 // Start the data processing:
 
-export const triggerGoogleDataTransfer = async (googleId) => {
+export const triggerGoogleDataTransfer = async (googleId: string) => {
     // console.log("reached triggerGoogleDataTransfer");
     // This fetches a list of the files from the S3 bucket:
     // const files = await listFiles(googleId);

@@ -15,11 +15,13 @@ import { triggerGoogleDataTransfer } from "./getGoogleData";
 const appRouter = trpc
     .router()
     .query("getTrips", {
-        input: z.object({
-            userId: z.string(),
-            year: z.number(),
-            month: z.number(),
-        }),
+        input: z
+            .object({
+                userId: z.string(),
+                year: z.number(),
+                month: z.number(),
+            })
+            .default({ userId: "0", year: 2022, month: 1 }),
         async resolve({ input }) {
             let data = await getTrips({
                 userId: input.userId,
@@ -86,13 +88,16 @@ const appRouter = trpc
             name: z.string(),
             email: z.string(),
             googleId: z.string(),
+            imageUrl: z.string(),
         }),
         async resolve({ input }) {
+            console.log("adding user", input);
             const data = await addUser({
                 name: input.name,
                 userId: input.userId,
                 email: input.email,
                 googleId: input.googleId,
+                imageUrl: input.imageUrl,
             });
             return true;
         },

@@ -15,7 +15,7 @@ model User {
   name      String
   email     String
   googleId  String   @unique
-  imageUrl  String?
+  imageUrl  String
   Trip      Trip[]
 }
 

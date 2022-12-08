@@ -6,11 +6,18 @@ import {
     PutObjectCommand,
 } from "@aws-sdk/client-s3";
 var fs = require("fs");
-const Stream = require("stream");
+// const Stream = require("stream");
+
+// import dotenv from "dotenv";
+// dotenv.config();
+
+const AWS_REGION = process.env.AWS_REGION;
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 
 const client = new S3Client({ region: process.env.AWS_REGION });
 
-export const listFiles = async (googleId) => {
+export const listFiles = async (googleId: any) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         // Delimiter: '/',
@@ -29,15 +36,16 @@ export const listFiles = async (googleId) => {
 
     const data = await client.send(new ListObjectsCommand(params));
 
-    let files;
+    let files: any;
+
+    if (!data.Contents) {
+        return;
+    }
 
     try {
-        const filesFilter = data.Contents.filter((file) =>
-            file.Key.includes("json")
-        );
-        files = filesFilter.map((file) => {
-            if (file.Key.includes("json")) return file.Key;
-        });
+        const files = data.Contents.filter(
+            (file: any) => "Key" in file && file.Key.endsWith(".json")
+        ).map((file) => file.Key);
     } catch (e) {
         console.log("error getting files", e);
     }
@@ -47,18 +55,21 @@ export const listFiles = async (googleId) => {
     return files;
 };
 
-const streamToString = (stream) =>
+const streamToString = (stream: any) =>
     new Promise((resolve, reject) => {
-        const chunks = [];
-        stream.on("data", (chunk) => {
+        const chunks = [] as string[];
+        stream.on("data", (chunk: any) => {
             // console.log('chunking', chunk);
             chunks.push(chunk);
         });
         stream.on("error", reject);
-        stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+
+        stream.on("end", () =>
+            resolve(Buffer.concat(chunks.map(Buffer.from)).toString("utf8"))
+        );
     });
 
-export const getFile = async (fileName) => {
+export const getFile = async (fileName: any) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: fileName,
@@ -80,8 +91,21 @@ export const getFile = async (fileName) => {
     }
 };
 
-export const uploadFile = async (files, googleId) => {
-    const s3client = new S3Client(null);
+export const uploadFile = async (files: any, googleId: any) => {
+    if (
+        AWS_REGION == undefined ||
+        AWS_ACCESS_KEY_ID == undefined ||
+        AWS_SECRET_ACCESS_KEY == undefined
+    ) {
+        return;
+    }
+    const s3client = new S3Client({
+        region: AWS_REGION,
+        credentials: {
+            accessKeyId: AWS_ACCESS_KEY_ID,
+            secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        },
+    });
 
     const params = files.map((file: { originalname: string; buffer: any }) => {
         console.log("file", file);
@@ -93,6 +117,6 @@ export const uploadFile = async (files, googleId) => {
     });
 
     return await Promise.all(
-        params.map((param) => s3client.send(new PutObjectCommand(param)))
+        params.map((param: any) => s3client.send(new PutObjectCommand(param)))
     );
 };

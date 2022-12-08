@@ -7,14 +7,23 @@ export async function addUser({
     userId: userId,
     email: email,
     googleId: googleId,
+    imageUrl: imageUrl,
 }: {
     name: string;
     userId: string;
     email: string;
     googleId: string;
+    imageUrl: string;
 }) {
     const user = await prisma.user
-        .create({ data: { name: name, email: email, googleId: googleId } })
+        .create({
+            data: {
+                name: name,
+                email: email,
+                googleId: googleId,
+                imageUrl: imageUrl,
+            },
+        })
         .catch((e) => {
             console.error(e.message);
         })
@@ -125,8 +134,8 @@ export async function getTrips(input: {
     return trips;
 }
 
-function tripsReduce(trips) {
-    return trips.reduce((acc, trip) => {
+function tripsReduce(trips: any) {
+    return trips.reduce((acc: any, trip: any) => {
         const key = `${trip.startLocation}-${trip.endLocation}`;
         if (!acc[key]) {
             acc[key] = {
@@ -220,12 +229,12 @@ export async function getLocations(input: {
 
     if (!startLocations || !endLocations) return [];
 
-    const sL = startLocations.reduce((result, entry) => {
+    const sL = startLocations.reduce((result: any, entry: any) => {
         result.push({
             label: entry.startLocationId.name,
             value: entry.startLocationId.placeId,
         });
-        result.sort((a, b) => {
+        result.sort((a: any, b: any) => {
             // Compare the name properties of the objects
             if (a.label < b.label) {
                 return -1;
@@ -238,12 +247,12 @@ export async function getLocations(input: {
         return result;
     }, []);
 
-    const eL = endLocations.reduce((result, entry) => {
+    const eL = endLocations.reduce((result: any, entry: any) => {
         result.push({
             label: entry.endLocationId.name,
             value: entry.endLocationId.placeId,
         });
-        result.sort((a, b) => {
+        result.sort((a: any, b: any) => {
             // Compare the name properties of the objects
             if (a.label < b.label) {
                 return -1;
