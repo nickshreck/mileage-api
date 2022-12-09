@@ -134,6 +134,59 @@ export async function getTrips(input: {
     return trips;
 }
 
+export async function checkData(input: { userId: string }) {
+    const trips = await prisma.trip
+        .findMany({
+            where: {
+                user: input.userId,
+            },
+            select: { month: true, year: true },
+            distinct: ["month", "year"],
+        })
+        .catch((e) => {
+            console.error(e.message);
+        })
+        .finally(async () => {
+            await prisma.$disconnect();
+        });
+
+    if (!trips) return { years: [], months: [] };
+
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    // if(trips.)
+
+    const years = trips.reduce((acc: any, item) => {
+        if (!acc.find((y: any) => y.year === item.year)) {
+            acc.push({ year: item.year, months: [] });
+        }
+        return acc;
+    }, []);
+
+    trips.forEach((item) => {
+        const year = years.find((y: any) => y.year === item.year);
+        const month = { label: monthNames[item.month - 1], value: item.month };
+        if (!year.months.find((m: any) => m.value === month.value)) {
+            year.months.push(month);
+        }
+    });
+
+    return { years };
+}
+
 function tripsReduce(trips: any) {
     return trips.reduce((acc: any, trip: any) => {
         const key = `${trip.startLocation}-${trip.endLocation}`;

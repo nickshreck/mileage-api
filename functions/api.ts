@@ -7,6 +7,7 @@ import {
     updateTrip,
     searchTrips,
     getLocations,
+    checkData,
 } from "./useDB";
 import { z } from "zod";
 import { listFiles } from "./s3";
@@ -14,14 +15,23 @@ import { triggerGoogleDataTransfer } from "./getGoogleData";
 
 const appRouter = trpc
     .router()
+    .query("checkData", {
+        input: z.object({
+            userId: z.string(),
+        }),
+        async resolve({ input }) {
+            let data = await checkData({
+                userId: input.userId,
+            });
+            return data;
+        },
+    })
     .query("getTrips", {
-        input: z
-            .object({
-                userId: z.string(),
-                year: z.number(),
-                month: z.number(),
-            })
-            .default({ userId: "0", year: 2022, month: 1 }),
+        input: z.object({
+            userId: z.string(),
+            year: z.number(),
+            month: z.number(),
+        }),
         async resolve({ input }) {
             let data = await getTrips({
                 userId: input.userId,
@@ -112,20 +122,6 @@ const appRouter = trpc
             return true;
         },
     })
-    // .mutation("createDatabaseData", {
-    //     input: z.object({
-    //         userId: z.string(),
-    //     }),
-    //     async resolve({ input }) {
-    //         // console.log("using userId", input.userId);
-
-    //         const data = await convertAllGoogleData(input.userId);
-
-    //         // console.log("data", data);
-
-    //         return true;
-    //     },
-    // })
     .mutation("deleteAll", {
         input: z.object({
             userId: z.string(),
