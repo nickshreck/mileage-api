@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node index.ts",
-    "dev": "ts-node-dev index.ts",
+    "dev": "ts-node-dev --exit-child index.ts",
     "transpile": "ts-node-dev --files --transpile-only --respawn --inspect=4321 --project tsconfig.json index.ts"
   },
   "main": "index.ts",

@@ -12,6 +12,7 @@ import {
 import { z } from "zod";
 import { listFiles } from "./s3";
 import { triggerGoogleDataTransfer } from "./getGoogleData";
+import { getMonthlyReview } from "./processData";
 
 const appRouter = trpc
     .router()
@@ -38,7 +39,11 @@ const appRouter = trpc
                 year: input.year,
                 month: input.month,
             });
-            return data;
+
+            // Process data to list number of trips by personal/business/unclassified, and distance by personal/business/unclassified
+            let monthlyReview = getMonthlyReview(data, input.userId);
+
+            return monthlyReview;
         },
     })
     .query("searchTrips", {
