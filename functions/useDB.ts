@@ -194,7 +194,9 @@ function tripsReduce(trips: any) {
             acc[key] = {
                 // trip: key,
                 startLocation: trip.startLocationId.name,
+                startLocationId: trip.startLocationId.placeId,
                 endLocation: trip.endLocationId.name,
+                endLocationId: trip.endLocationId.placeId,
                 count: 0,
             };
         }
